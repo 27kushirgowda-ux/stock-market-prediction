@@ -1,0 +1,115 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* BACKGROUND */
+.landing {
+  height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  color: #e5e7eb;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* GRID EFFECT */
+.landing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+/* CENTER */
+.hero {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.hero-text {
+  max-width: 760px;
+  padding: 48px 44px;
+  background: rgba(15, 23, 42, 0.65);
+  border-radius: 22px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 60px rgba(34, 197, 94, 0.15);
+  text-align: center;
+  z-index: 1;
+}
+
+/* TEXT */
+.hero-text h4 {
+  color: #22c55e;
+  letter-spacing: 2px;
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+}
+
+.hero-text h1 {
+  font-size: 3rem;
+  margin-bottom: 18px;
+}
+
+.hero-text p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #cbd5f5;
+}
+
+/* BUTTON WRAPPER */
+.landing-buttons {
+  margin-top: 32px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* BASE BUTTON (SAME SIZE GUARANTEED) */
+.landing-btn {
+  width: 240px;               /* 🔒 LOCKED WIDTH */
+  padding: 14px 0;
+  border-radius: 40px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+/* SIGN IN */
+.landing-btn.primary {
+  background: #22c55e;
+  color: #020617;
+  border: none;
+}
+
+/* SIGN UP */
+.landing-btn.secondary {
+  background: transparent;
+  color: #22c55e;
+  border: 1px solid #22c55e;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .hero-text h1 {
+    font-size: 2.2rem;
+  }
+
+  .landing-buttons {
+    flex-direction: column;
+  }
+
+  .landing-btn {
+    width: 100%;
+  }
+}

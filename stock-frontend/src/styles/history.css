@@ -1,0 +1,100 @@
+.history-page {
+  max-width: 900px;
+  margin: auto;
+}
+
+.history-title {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.history-sub {
+  color: #9ca3af;
+  margin-bottom: 24px;
+}
+
+.empty-history {
+  padding: 40px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.history-row {
+  background: #111827;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  transition: background 0.2s;
+}
+
+.history-row:hover {
+  background: #1f2937;
+}
+
+.history-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-date {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.history-stock {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.history-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.view-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.delete-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: #374151;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.history-details {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.signal {
+  padding: 10px;
+  border-radius: 8px;
+  background: #1f2937;
+  color: #9ca3af;
+}
+
+.signal.active.buy {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.signal.active.hold {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+}
+
+.signal.active.sell {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}

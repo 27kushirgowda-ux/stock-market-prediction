@@ -1,0 +1,197 @@
+/* ================= BASE ================= */
+.dashboard-page {
+  padding: 32px 40px;
+  color: #e5e7eb;
+}
+
+.dash-title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+
+/* ================= CARDS ================= */
+.dash-card {
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.92),
+    rgba(2, 6, 23, 0.95)
+  );
+  border-radius: 20px;
+  padding: 26px 30px;
+  box-shadow: 0 0 50px rgba(34, 197, 94, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dash-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 60px rgba(34, 197, 94, 0.1);
+}
+
+.dash-card.wide {
+  margin-top: 34px;
+}
+
+/* ================= SECTION TITLES ================= */
+.dash-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: #22c55e;
+  letter-spacing: 0.4px;
+}
+
+/* ================= TEXT ================= */
+.highlight {
+  font-size: 26px;
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.muted {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ================= TABLE ================= */
+.market-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  font-size: 14px;
+}
+
+.market-table thead th {
+  text-align: left;
+  color: #94a3b8;
+  font-weight: 600;
+  padding: 8px 16px;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+}
+
+.market-table tbody tr {
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: 16px;
+  transition: background 0.2s ease;
+}
+
+.market-table tbody tr:hover {
+  background: rgba(30, 41, 59, 0.95);
+}
+
+.market-table tbody td {
+  padding: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.market-table tbody tr td:first-child {
+  border-radius: 16px 0 0 16px;
+}
+
+.market-table tbody tr td:last-child {
+  border-radius: 0 16px 16px 0;
+}
+
+/* ================= COLORS ================= */
+.symbol {
+  font-weight: 700;
+  color: #38bdf8;
+  font-size: 15px;
+}
+
+.green {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.red {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* ================= MINI SPARK ================= */
+.spark {
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.spark.green {
+  color: #22c55e;
+}
+
+/* ================= CANDLE HERO SECTION ================= */
+.dash-card.candle-hero {
+  padding: 30px 32px;
+  border: 1px solid rgba(34, 197, 94, 0.08);
+}
+
+/* ================= ACTUAL VS PREDICTED CARD ================= */
+.dash-card.avp-section {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.08);
+  min-height: 420px;
+}
+
+/* Chart container height */
+.avp-chart {
+  width: 100%;
+  height: 340px;
+}
+
+/* ================= DARK TRADINGVIEW STYLE (FIX) ================= */
+
+/* Force dark background inside Recharts SVG */
+.avp-section svg {
+  background: #020617;
+  border-radius: 12px;
+}
+
+/* Grid lines */
+.avp-section .recharts-cartesian-grid-horizontal line,
+.avp-section .recharts-cartesian-grid-vertical line {
+  stroke: rgba(148, 163, 184, 0.15);
+}
+
+/* Axis lines */
+.avp-section .recharts-cartesian-axis-line {
+  stroke: #334155;
+}
+
+/* Axis ticks */
+.avp-section .recharts-cartesian-axis-tick line {
+  stroke: #334155;
+}
+
+/* Axis text */
+.avp-section .recharts-text,
+.avp-section .recharts-cartesian-axis-tick-value {
+  fill: #cbd5f5;
+  font-size: 12px;
+}
+
+/* Tooltip dark */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #020617 !important;
+  border: 1px solid #334155 !important;
+  color: #e5e7eb !important;
+}
+
+/* Legend text */
+.recharts-legend-item-text {
+  color: #cbd5f5 !important;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1200px) {
+  .dashboard-page {
+    padding: 20px;
+  }
+
+  .market-table {
+    font-size: 13px;
+  }
+}
