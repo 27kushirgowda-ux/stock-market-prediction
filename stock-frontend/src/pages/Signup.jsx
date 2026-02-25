@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/auth.css";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function Signup() {
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");       // ✅ added
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,10 +18,10 @@ export default function Signup() {
     setSuccess("");
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/signup", {
+      const res = await fetch(`${API_BASE_URL}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }), // ✅ send name
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await res.json();
@@ -45,7 +47,6 @@ export default function Signup() {
         <h2>Sign Up</h2>
         <p className="auth-sub">Create your StockAI account</p>
 
-        {/* ✅ NAME INPUT (same style) */}
         <input
           type="text"
           placeholder="Name"

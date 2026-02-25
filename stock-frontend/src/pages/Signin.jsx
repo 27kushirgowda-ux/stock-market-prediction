@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/auth.css";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function Signin({ onLogin }) {
   const navigate = useNavigate();
 
@@ -13,7 +15,7 @@ export default function Signin({ onLogin }) {
     setError("");
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/login", {
+      const res = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -26,7 +28,6 @@ export default function Signin({ onLogin }) {
         return;
       }
 
-      // ✅ STORE USER INFO
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -38,7 +39,7 @@ export default function Signin({ onLogin }) {
 
       onLogin && onLogin();
       navigate("/home");
-    } catch {
+    } catch (err) {
       setError("Backend not reachable");
     }
   };
