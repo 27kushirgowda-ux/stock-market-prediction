@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "../styles/Home.css";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function Home() {
   const [stock, setStock] = useState("");
   const [date, setDate] = useState(
@@ -16,13 +18,13 @@ export default function Home() {
 
   // 🔹 FETCH TOP 5 STOCKS (FAST) + RESTORE SELECTED STOCK
   useEffect(() => {
-    // ✅ RESTORE LAST SELECTED STOCK (FIX)
+    // ✅ RESTORE LAST SELECTED STOCK
     const lastStock = localStorage.getItem("last_stock");
     if (lastStock) {
       setStock(lastStock);
     }
 
-    fetch("http://127.0.0.1:8000/top-stocks")
+    fetch(`${API_BASE_URL}/top-stocks`)
       .then((res) => res.json())
       .then((data) => {
         setTopStocks(data.stocks || []);
@@ -31,7 +33,7 @@ export default function Home() {
       .catch(() => setLoadingTop(false));
   }, []);
 
-  // 🔹 ANALYZE (UNCHANGED)
+  // 🔹 ANALYZE
   const handleAnalyze = async () => {
     if (!stock) return;
 
@@ -39,7 +41,7 @@ export default function Home() {
     setResult(null);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/analyze", {
+      const res = await fetch(`${API_BASE_URL}/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ stock, date }),
@@ -54,7 +56,7 @@ export default function Home() {
       localStorage.setItem("last_stock", stock);
 
       // SAVE TO HISTORY
-      await fetch("http://127.0.0.1:8000/history", {
+      await fetch(`${API_BASE_URL}/history`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -126,7 +128,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* 🔹 SAME INPUTS */}
+      {/* 🔹 INPUTS */}
       <div className="input-row">
         <input
           type="text"
@@ -143,12 +145,12 @@ export default function Home() {
         />
       </div>
 
-      {/* 🔹 SAME ANALYZE BUTTON */}
+      {/* 🔹 ANALYZE BUTTON */}
       <button className="analyze-btn" onClick={handleAnalyze}>
         {loading ? "Analyzing..." : "Analyze / Predict"}
       </button>
 
-      {/* 🔹 SAME RESULT UI */}
+      {/* 🔹 RESULT */}
       {result && (
         <>
           <div className="signal-card">
