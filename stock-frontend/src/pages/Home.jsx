@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "../styles/home.css";
+import "../styles/Home.css";
 
 export default function Home() {
   const [stock, setStock] = useState("");
