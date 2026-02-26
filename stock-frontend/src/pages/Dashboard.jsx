@@ -4,6 +4,8 @@ import "../styles/dashboard.css";
 import TradingViewChart from "../components/TradingViewChart";
 import ActualVsPredicted from "../components/ActualVsPredicted";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function Dashboard() {
   const selectedStock = localStorage.getItem("last_stock");
   const [avpData, setAvpData] = useState([]);
@@ -15,7 +17,7 @@ export default function Dashboard() {
       return;
     }
 
-    fetch(`http://127.0.0.1:8000/actual-vs-predicted/${selectedStock}`)
+    fetch(`${API_BASE_URL}/actual-vs-predicted/${selectedStock}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -45,7 +47,7 @@ export default function Dashboard() {
       </div>
 
       {/* ================= ACTUAL VS PREDICTED ================= */}
-      <div className="dash-card wide avp-section light-chart">
+      <div className="dash-card wide avp-section">
         <h3>Actual vs Predicted Price</h3>
 
         <ActualVsPredicted data={avpData} />
