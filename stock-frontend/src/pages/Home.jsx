@@ -16,9 +16,9 @@ export default function Home() {
 
   const userId = localStorage.getItem("user_id");
 
-  // 🔹 FETCH TOP 5 STOCKS (FAST) + RESTORE SELECTED STOCK
+  // ================= FETCH TOP GAINERS =================
   useEffect(() => {
-    // ✅ RESTORE LAST SELECTED STOCK
+    // restore last selected stock
     const lastStock = localStorage.getItem("last_stock");
     if (lastStock) {
       setStock(lastStock);
@@ -27,13 +27,13 @@ export default function Home() {
     fetch(`${API_BASE_URL}/top-stocks`)
       .then((res) => res.json())
       .then((data) => {
-        setTopStocks(data.stocks || []);
+        setTopStocks(Array.isArray(data.stocks) ? data.stocks : []);
         setLoadingTop(false);
       })
       .catch(() => setLoadingTop(false));
   }, []);
 
-  // 🔹 ANALYZE
+  // ================= ANALYZE =================
   const handleAnalyze = async () => {
     if (!stock) return;
 
@@ -48,15 +48,15 @@ export default function Home() {
       });
 
       const data = await res.json();
-      if (!res.ok) return;
 
+      // ✅ ALWAYS show result (even fallback)
       setResult(data);
 
-      // ✅ SAVE SELECTED STOCK
+      // save selected stock
       localStorage.setItem("last_stock", stock);
 
-      // SAVE TO HISTORY
-      await fetch(`${API_BASE_URL}/history`, {
+      // save history (do NOT block UI)
+      fetch(`${API_BASE_URL}/history`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -68,15 +68,22 @@ export default function Home() {
           hold_conf: data.confidence.hold,
           sell_conf: data.confidence.sell,
         }),
-      });
+      }).catch(() => {});
     } catch (err) {
       console.error(err);
+
+      // 🔥 UI fallback (never blank)
+      setResult({
+        signal: "HOLD",
+        confidence: { buy: 0.33, hold: 0.34, sell: 0.33 },
+        reason: "Prediction temporarily unavailable. Showing fallback result."
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 EXISTING LOGIC (UNCHANGED)
+  // ================= RESULT LOGIC =================
   const confidence = result?.confidence || {};
   const maxSignal = result
     ? Object.keys(confidence).reduce((a, b) =>
@@ -86,19 +93,22 @@ export default function Home() {
 
   const arrow = (type) => (type === maxSignal ? "▲" : "▼");
 
+  // ================= UI =================
   return (
-    <div className="home-page">
+    <div className="page-container home-page">
       <h1 className="page-title">Stock Analysis</h1>
       <p className="page-sub">
         AI-powered prediction using Yahoo Finance historical data
       </p>
 
-      {/* 🔹 TOP 5 STOCKS TABLE */}
+      {/* ================= TOP GAINERS ================= */}
       <div className="top-stocks-card">
         <h3>Top Gainers Today</h3>
 
         {loadingTop ? (
           <p className="muted">Loading market movers...</p>
+        ) : topStocks.length === 0 ? (
+          <p className="muted">Market data unavailable</p>
         ) : (
           <table className="top-stocks-table">
             <thead>
@@ -128,13 +138,14 @@ export default function Home() {
         )}
       </div>
 
-      {/* 🔹 INPUTS */}
+      {/* ================= INPUTS ================= */}
       <div className="input-row">
         <input
           type="text"
           value={stock}
           readOnly
           className="stock-input"
+          placeholder="Select a stock"
         />
 
         <input
@@ -145,12 +156,12 @@ export default function Home() {
         />
       </div>
 
-      {/* 🔹 ANALYZE BUTTON */}
-      <button className="analyze-btn" onClick={handleAnalyze}>
+      {/* ================= ANALYZE BUTTON ================= */}
+      <button className="analyze-btn" onClick={handleAnalyze} disabled={loading}>
         {loading ? "Analyzing..." : "Analyze / Predict"}
       </button>
 
-      {/* 🔹 RESULT */}
+      {/* ================= RESULT ================= */}
       {result && (
         <>
           <div className="signal-card">
@@ -159,21 +170,21 @@ export default function Home() {
             <div className={`signal-box buy ${maxSignal === "buy" ? "active" : ""}`}>
               <span>BUY</span>
               <strong>
-                Confidence Score: {Math.round(confidence.buy * 100)}% {arrow("buy")}
+                {Math.round(confidence.buy * 100)}% {arrow("buy")}
               </strong>
             </div>
 
             <div className={`signal-box hold ${maxSignal === "hold" ? "active" : ""}`}>
               <span>HOLD</span>
               <strong>
-                Confidence Score: {Math.round(confidence.hold * 100)}% {arrow("hold")}
+                {Math.round(confidence.hold * 100)}% {arrow("hold")}
               </strong>
             </div>
 
             <div className={`signal-box sell ${maxSignal === "sell" ? "active" : ""}`}>
               <span>SELL</span>
               <strong>
-                Confidence Score: {Math.round(confidence.sell * 100)}% {arrow("sell")}
+                {Math.round(confidence.sell * 100)}% {arrow("sell")}
               </strong>
             </div>
           </div>
