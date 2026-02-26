@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "../styles/history.css";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function History() {
   const [items, setItems] = useState([]);
   const [openId, setOpenId] = useState(null);
@@ -11,13 +13,14 @@ export default function History() {
   useEffect(() => {
     if (!userId) return;
 
-    fetch(`http://127.0.0.1:8000/history/${userId}`)
+    fetch(`${API_BASE_URL}/history/${userId}`)
       .then((res) => res.json())
-      .then((data) => setItems(data));
+      .then((data) => setItems(data))
+      .catch(() => setItems([]));
   }, [userId]);
 
   const handleDelete = async (id) => {
-    await fetch(`http://127.0.0.1:8000/history/${id}`, {
+    await fetch(`${API_BASE_URL}/history/${id}`, {
       method: "DELETE",
     });
 
@@ -25,72 +28,72 @@ export default function History() {
   };
 
   return (
-  <div className="history-page">
-    <h1 className="history-title">Prediction History</h1>
-    <p className="history-sub">
-      Review your past stock predictions
-    </p>
+    <div className="history-page">
+      <h1 className="history-title">Prediction History</h1>
+      <p className="history-sub">
+        Review your past stock predictions
+      </p>
 
-    {items.length === 0 && (
-      <div className="empty-history">
-        No predictions yet
-      </div>
-    )}
-
-    {items.map((item) => (
-      <div key={item.id} className="history-row">
-        <div className="history-main">
-          <span className="history-date">{item.date}</span>
-          <span className="history-stock">{item.stock}</span>
+      {items.length === 0 && (
+        <div className="empty-history">
+          No predictions yet
         </div>
+      )}
 
-        <div className="history-actions">
-          <button
-            className="view-btn"
-            onClick={() =>
-              setOpenId(openId === item.id ? null : item.id)
-            }
-          >
-            View
-          </button>
-
-          <button
-            className="delete-btn"
-            onClick={() => handleDelete(item.id)}
-          >
-            Delete
-          </button>
-        </div>
-
-        {openId === item.id && (
-          <div className="history-details">
-            <div
-              className={`signal buy ${
-                item.signal === "BUY" ? "active" : ""
-              }`}
-            >
-              BUY — {Math.round(item.buy_conf * 100)}%
-            </div>
-
-            <div
-              className={`signal hold ${
-                item.signal === "HOLD" ? "active" : ""
-              }`}
-            >
-              HOLD — {Math.round(item.hold_conf * 100)}%
-            </div>
-
-            <div
-              className={`signal sell ${
-                item.signal === "SELL" ? "active" : ""
-              }`}
-            >
-              SELL — {Math.round(item.sell_conf * 100)}%
-            </div>
+      {items.map((item) => (
+        <div key={item.id} className="history-row">
+          <div className="history-main">
+            <span className="history-date">{item.date}</span>
+            <span className="history-stock">{item.stock}</span>
           </div>
-        )}
-      </div>
-    ))}
-  </div>
-);
+
+          <div className="history-actions">
+            <button
+              className="view-btn"
+              onClick={() =>
+                setOpenId(openId === item.id ? null : item.id)
+              }
+            >
+              View
+            </button>
+
+            <button
+              className="delete-btn"
+              onClick={() => handleDelete(item.id)}
+            >
+              Delete
+            </button>
+          </div>
+
+          {openId === item.id && (
+            <div className="history-details">
+              <div
+                className={`signal buy ${
+                  item.signal === "BUY" ? "active" : ""
+                }`}
+              >
+                BUY — {Math.round(item.buy_conf * 100)}%
+              </div>
+
+              <div
+                className={`signal hold ${
+                  item.signal === "HOLD" ? "active" : ""
+                }`}
+              >
+                HOLD — {Math.round(item.hold_conf * 100)}%
+              </div>
+
+              <div
+                className={`signal sell ${
+                  item.signal === "SELL" ? "active" : ""
+                }`}
+              >
+                SELL — {Math.round(item.sell_conf * 100)}%
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 }
