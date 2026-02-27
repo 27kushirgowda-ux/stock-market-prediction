@@ -2,14 +2,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from database import init_db
+from backend.database import init_db
 from routers.auth import router as auth_router
 from routers.history import router as history_router
 
-from ml.analyze import analyze_stock_ml
-from ml.top_stocks import get_top_stocks
-from ml.candles import get_candles
-from ml.actual_vs_predicted import get_actual_vs_predicted
+from backend.ml.analyze import analyze_stock_ml
+from backend.ml.top_stocks import get_top_stocks
+from backend.ml.candles import get_candles
+from backend.ml.actual_vs_predicted import get_actual_vs_predicted
 
 app = FastAPI()
 
