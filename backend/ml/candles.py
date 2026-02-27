@@ -1,23 +1,35 @@
-# routers/candles.py
-import yfinance as yf
 from fastapi import APIRouter
+import yfinance as yf
 
-router = APIRouter(prefix="/candles", tags=["Candles"])
+router = APIRouter(prefix="/candles", tags=["candles"])
 
 @router.get("/{symbol}")
 def get_candles(symbol: str):
-    df = yf.download(symbol, period="2mo", interval="1d", progress=False)
+    try:
+        ticker = symbol.upper()
 
-    if df.empty:
+        df = yf.download(
+            ticker,
+            period="2mo",
+            interval="1d",
+            progress=False,
+            threads=False
+        )
+
+        if df.empty:
+            return []
+
+        candles = []
+        for idx, row in df.iterrows():
+            candles.append({
+                "time": idx.strftime("%Y-%m-%d"),
+                "open": float(row["Open"]),
+                "high": float(row["High"]),
+                "low": float(row["Low"]),
+                "close": float(row["Close"]),
+            })
+
+        return candles
+
+    except Exception as e:
         return []
-
-    return [
-        {
-            "date": idx.strftime("%Y-%m-%d"),
-            "open": float(row["Open"]),
-            "high": float(row["High"]),
-            "low": float(row["Low"]),
-            "close": float(row["Close"]),
-        }
-        for idx, row in df.iterrows()
-    ]

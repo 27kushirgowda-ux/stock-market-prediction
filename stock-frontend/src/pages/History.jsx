@@ -7,7 +7,6 @@ export default function History() {
   const [items, setItems] = useState([]);
   const [openId, setOpenId] = useState(null);
 
-  // ⭐ REAL logged-in user
   const userId = localStorage.getItem("user_id");
 
   useEffect(() => {
@@ -67,27 +66,13 @@ export default function History() {
 
           {openId === item.id && (
             <div className="history-details">
-              <div
-                className={`signal buy ${
-                  item.signal === "BUY" ? "active" : ""
-                }`}
-              >
+              <div className={`signal buy ${item.signal === "BUY" ? "active" : ""}`}>
                 BUY — {Math.round(item.buy_conf * 100)}%
               </div>
-
-              <div
-                className={`signal hold ${
-                  item.signal === "HOLD" ? "active" : ""
-                }`}
-              >
+              <div className={`signal hold ${item.signal === "HOLD" ? "active" : ""}`}>
                 HOLD — {Math.round(item.hold_conf * 100)}%
               </div>
-
-              <div
-                className={`signal sell ${
-                  item.signal === "SELL" ? "active" : ""
-                }`}
-              >
+              <div className={`signal sell ${item.signal === "SELL" ? "active" : ""}`}>
                 SELL — {Math.round(item.sell_conf * 100)}%
               </div>
             </div>

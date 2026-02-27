@@ -10,7 +10,6 @@ export default function Dashboard() {
   const selectedStock = localStorage.getItem("last_stock");
   const [avpData, setAvpData] = useState([]);
 
-  // ================= FETCH ACTUAL VS PREDICTED =================
   useEffect(() => {
     if (!selectedStock) {
       setAvpData([]);
@@ -33,7 +32,7 @@ export default function Dashboard() {
     <div className="dashboard-page">
       <h1 className="dash-title">Dashboard</h1>
 
-      {/* ================= CANDLESTICK ================= */}
+      {/* CANDLESTICK */}
       <div className="dash-card wide candle-hero">
         <h3>Candlestick Chart — {selectedStock || "N/A"}</h3>
 
@@ -46,10 +45,9 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* ================= ACTUAL VS PREDICTED ================= */}
-      <div className="dash-card wide avp-section">
+      {/* ACTUAL VS PREDICTED */}
+      <div className="dash-card wide avp-section light-chart">
         <h3>Actual vs Predicted Price</h3>
-
         <ActualVsPredicted data={avpData} />
       </div>
     </div>
