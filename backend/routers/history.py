@@ -1,25 +1,23 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from backend.database import get_db
 
 router = APIRouter(prefix="/history", tags=["History"])
 
-@router.get("/")
-def get_history():
-    # TEMP USER (same as analyze)
-    user_id = 1
 
+@router.get("/")
+def get_history(user_id: int):
     conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT
+        SELECT 
+            id,
             stock,
             date,
             signal,
             buy_conf,
             hold_conf,
-            sell_conf,
-            created_at
+            sell_conf
         FROM history
         WHERE user_id = ?
         ORDER BY created_at DESC
@@ -28,18 +26,16 @@ def get_history():
     rows = cursor.fetchall()
     conn.close()
 
-    history = []
-    for row in rows:
-        history.append({
-            "stock": row["stock"],
-            "date": row["date"],
-            "signal": row["signal"],
-            "confidence": {
-                "buy": row["buy_conf"],
-                "hold": row["hold_conf"],
-                "sell": row["sell_conf"]
-            },
-            "created_at": row["created_at"]
-        })
+    return [dict(row) for row in rows]
 
-    return history
+
+@router.delete("/{history_id}")
+def delete_history(history_id: int):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM history WHERE id = ?", (history_id,))
+    conn.commit()
+    conn.close()
+
+    return {"message": "Deleted"}
