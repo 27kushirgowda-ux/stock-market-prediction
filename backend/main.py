@@ -11,7 +11,7 @@ from routers.top_gainers import router as top_gainers_router
 from ml.analyze import analyze_stock_ml
 from ml.top_stocks import get_top_stocks
 from ml.candles import router as candles_router
-from ml.actual_vs_predicted import router as avp_router
+from ml.actual_vs_predicted import get_actual_vs_predicted
 
 app = FastAPI()
 
@@ -29,7 +29,7 @@ app.include_router(auth_router)
 app.include_router(history_router)
 app.include_router(top_gainers_router)
 app.include_router(candles_router)
-app.include_router(avp_router)
+
 
 class AnalyzeRequest(BaseModel):
     stock: str
@@ -47,6 +47,10 @@ def analyze_stock(data: AnalyzeRequest):
 @app.get("/top-stocks")
 def top_stocks():
     return {"stocks": get_top_stocks()}
+
+@app.get("/actual-vs-predicted/{symbol}")
+def actual_vs_predicted(symbol: str):
+    return get_actual_vs_predicted(symbol)
 
 @app.get("/")
 def root():
