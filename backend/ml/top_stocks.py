@@ -1,5 +1,5 @@
 import yfinance as yf
-from ml.stock_universe import ALL_STOCKS
+from backend.ml.stock_universe import ALL_STOCKS
 
 def get_top_stocks():
     movers = []

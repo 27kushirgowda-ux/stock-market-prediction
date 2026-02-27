@@ -1,5 +1,5 @@
 import yfinance as yf
-from ml.analyze import analyze_stock_ml
+from backend.ml.analyze import analyze_stock_ml
 
 def get_actual_vs_predicted(symbol: str):
     symbol = symbol if symbol.endswith(".NS") else f"{symbol}.NS"
