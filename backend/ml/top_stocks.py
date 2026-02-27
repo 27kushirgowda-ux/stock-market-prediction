@@ -8,27 +8,27 @@ def get_top_stocks():
 
     for symbol in ALL_STOCKS:
         try:
-            data = yf.download(
+            df = yf.download(
                 symbol,
-                period="2d",
-                interval="1d",
+                period="1d",
+                interval="5m",   # ✅ intraday
                 progress=False,
                 threads=False
             )
 
-            if data is None or data.empty or len(data) < 2:
+            if df is None or df.empty:
                 continue
 
-            prev_close = data["Close"].iloc[-2]
-            last_close = data["Close"].iloc[-1]
+            open_price = df["Open"].iloc[0]
+            last_price = df["Close"].iloc[-1]
 
-            if prev_close is None or last_close is None:
+            if open_price is None or last_price is None:
                 continue
 
-            prev_close = float(prev_close)
-            last_close = float(last_close)
+            open_price = float(open_price)
+            last_price = float(last_price)
 
-            change_pct = ((last_close - prev_close) / prev_close) * 100
+            change_pct = ((last_price - open_price) / open_price) * 100
 
             results.append({
                 "symbol": symbol,
@@ -36,7 +36,7 @@ def get_top_stocks():
             })
 
         except Exception as e:
-            print(f"Error processing {symbol}: {e}")
+            print(f"{symbol} failed: {e}")
             continue
 
     results.sort(key=lambda x: x["change"], reverse=True)
