@@ -18,11 +18,8 @@ export default function Home() {
 
   // ================= FETCH TOP GAINERS =================
   useEffect(() => {
-    // restore last selected stock
     const lastStock = localStorage.getItem("last_stock");
-    if (lastStock) {
-      setStock(lastStock);
-    }
+    if (lastStock) setStock(lastStock);
 
     fetch(`${API_BASE_URL}/top-stocks`)
       .then((res) => res.json())
@@ -49,13 +46,33 @@ export default function Home() {
 
       const data = await res.json();
 
-      // ✅ ALWAYS show result (even fallback)
+      // ✅ SHOW RESULT
       setResult(data);
 
       // save selected stock
       localStorage.setItem("last_stock", stock);
 
-      // save history (do NOT block UI)
+      // ============================
+      // ✅ FALLBACK HISTORY (LOCAL)
+      // ============================
+      const fallbackHistory = {
+        id: Date.now(),
+        stock: stock,
+        date: date,
+        signal: data.signal,
+        buy_conf: data.confidence.buy,
+        hold_conf: data.confidence.hold,
+        sell_conf: data.confidence.sell,
+      };
+
+      localStorage.setItem(
+        "fallback_history",
+        JSON.stringify([fallbackHistory])
+      );
+
+      // ============================
+      // 🔁 BACKEND HISTORY (OPTIONAL)
+      // ============================
       fetch(`${API_BASE_URL}/history`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -72,11 +89,10 @@ export default function Home() {
     } catch (err) {
       console.error(err);
 
-      // 🔥 UI fallback (never blank)
       setResult({
         signal: "HOLD",
         confidence: { buy: 0.33, hold: 0.34, sell: 0.33 },
-        reason: "Prediction temporarily unavailable. Showing fallback result."
+        reason: "Prediction temporarily unavailable. Showing fallback result.",
       });
     } finally {
       setLoading(false);
@@ -168,24 +184,15 @@ export default function Home() {
             <h3>Prediction Result</h3>
 
             <div className={`signal-box buy ${maxSignal === "buy" ? "active" : ""}`}>
-              <span>BUY</span>
-              <strong>
-                {Math.round(confidence.buy * 100)}% {arrow("buy")}
-              </strong>
+              BUY — {Math.round(confidence.buy * 100)}% {arrow("buy")}
             </div>
 
             <div className={`signal-box hold ${maxSignal === "hold" ? "active" : ""}`}>
-              <span>HOLD</span>
-              <strong>
-                {Math.round(confidence.hold * 100)}% {arrow("hold")}
-              </strong>
+              HOLD — {Math.round(confidence.hold * 100)}% {arrow("hold")}
             </div>
 
             <div className={`signal-box sell ${maxSignal === "sell" ? "active" : ""}`}>
-              <span>SELL</span>
-              <strong>
-                {Math.round(confidence.sell * 100)}% {arrow("sell")}
-              </strong>
+              SELL — {Math.round(confidence.sell * 100)}% {arrow("sell")}
             </div>
           </div>
 
