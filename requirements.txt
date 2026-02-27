@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+yfinance
+pandas
+numpy
+sqlalchemy
+pydantic
+python-multipart
+requests
