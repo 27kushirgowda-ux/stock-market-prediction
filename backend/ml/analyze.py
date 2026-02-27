@@ -2,7 +2,7 @@ import yfinance as yf
 import pandas as pd
 
 def analyze_stock_ml(stock: str):
-    df = yf.download(stock, period="6mo", progress=False)
+    df = yf.download(stock, period="6mo", interval="1d", progress=False)
 
     if df.empty or len(df) < 50:
         return None
@@ -14,7 +14,6 @@ def analyze_stock_ml(stock: str):
     ma20 = float(df["MA20"].iloc[-1])
     ma50 = float(df["MA50"].iloc[-1])
 
-    # 🚨 NaN protection
     if pd.isna(ma20) or pd.isna(ma50):
         return None
 
