@@ -4,7 +4,8 @@ import pandas as pd
 def analyze_stock_ml(stock: str):
     df = yf.download(stock, period="6mo", interval="1d", progress=False)
 
-    if df.empty or len(df) < 50:
+    # 🔧 FIX: was 50, now 20
+    if df.empty or len(df) < 20:
         return None
 
     df["MA20"] = df["Close"].rolling(20).mean()
