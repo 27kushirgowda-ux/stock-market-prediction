@@ -1,24 +1,22 @@
 import yfinance as yf
+import pandas as pd
 from backend.ml.analyze import analyze_stock_ml
 
 def get_actual_vs_predicted(symbol: str):
-    symbol = symbol.upper()   # ✅ US stocks only
+    df = yf.download(symbol, period="10d", interval="1d", progress=False)
 
-    df = yf.download(
-        symbol,
-        period="10d",
-        interval="1d",
-        progress=False
-    )
-
-    # ✅ Guard 1: No price data
     if df.empty or len(df) < 5:
         return []
 
-    result = analyze_stock_ml(symbol)
+    # ✅ Fix Yahoo column issue
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
 
-    # ✅ Guard 2: ML returned None
-    if not result or "signal" not in result:
+    if "Close" not in df.columns:
+        return []
+
+    result = analyze_stock_ml(symbol)
+    if not result:
         return []
 
     signal = result["signal"]
