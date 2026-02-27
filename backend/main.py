@@ -3,8 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from backend.database import init_db
-from routers.auth import router as auth_router
-from routers.history import router as history_router
+from backend.routers.auth import router as auth_router
+from backend.routers.history import router as history_router
 
 from backend.ml.analyze import analyze_stock_ml
 from backend.ml.top_stocks import get_top_stocks
