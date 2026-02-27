@@ -1,43 +1,33 @@
-# backend/ml/top_stocks.py
-
 import yfinance as yf
-from backend.ml.stock_universe import ALL_STOCKS
+
+US_STOCKS = ["AAPL", "MSFT", "TSLA", "NVDA", "AMZN", "GOOGL", "META"]
 
 def get_top_stocks():
     results = []
 
-    for symbol in ALL_STOCKS:
+    for symbol in US_STOCKS:
         try:
-            df = yf.download(
-                symbol,
-                period="1d",
-                interval="5m",   # ✅ intraday
-                progress=False,
-                threads=False
-            )
+            ticker = yf.Ticker(symbol)
+            data = ticker.history(period="1d", interval="5m")
 
-            if df is None or df.empty:
+            if data.empty:
                 continue
 
-            open_price = df["Open"].iloc[0]
-            last_price = df["Close"].iloc[-1]
-
-            if open_price is None or last_price is None:
-                continue
-
-            open_price = float(open_price)
-            last_price = float(last_price)
+            open_price = data["Open"].iloc[0]
+            last_price = data["Close"].iloc[-1]
 
             change_pct = ((last_price - open_price) / open_price) * 100
 
             results.append({
                 "symbol": symbol,
-                "change": round(change_pct, 2)
+                "price": round(last_price, 2),
+                "change_percent": round(change_pct, 2)
             })
 
         except Exception as e:
-            print(f"{symbol} failed: {e}")
-            continue
+            print(symbol, e)
 
-    results.sort(key=lambda x: x["change"], reverse=True)
-    return results[:5]
+    # 🔥 IMPORTANT: always return something
+    results.sort(key=lambda x: x["change_percent"], reverse=True)
+
+    return results[:5]   # top 5 movers
