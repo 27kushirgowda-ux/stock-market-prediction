@@ -3,21 +3,14 @@ from backend.database import get_db
 
 router = APIRouter(prefix="/history", tags=["History"])
 
-
-@router.get("/")
+# ---------------- GET USER HISTORY ----------------
+@router.get("/{user_id}")
 def get_history(user_id: int):
     conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT 
-            id,
-            stock,
-            date,
-            signal,
-            buy_conf,
-            hold_conf,
-            sell_conf
+        SELECT id, stock, date, signal, buy_conf, hold_conf, sell_conf
         FROM history
         WHERE user_id = ?
         ORDER BY created_at DESC
@@ -29,12 +22,17 @@ def get_history(user_id: int):
     return [dict(row) for row in rows]
 
 
+# ---------------- DELETE HISTORY ITEM ----------------
 @router.delete("/{history_id}")
 def delete_history(history_id: int):
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM history WHERE id = ?", (history_id,))
+    cursor.execute(
+        "DELETE FROM history WHERE id = ?",
+        (history_id,)
+    )
+
     conn.commit()
     conn.close()
 

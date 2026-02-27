@@ -7,7 +7,8 @@ export default function History() {
   const [items, setItems] = useState([]);
   const [openId, setOpenId] = useState(null);
 
-  const userId = localStorage.getItem("user_id");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?.id;
 
   useEffect(() => {
     if (!userId) return;
@@ -29,14 +30,10 @@ export default function History() {
   return (
     <div className="history-page">
       <h1 className="history-title">Prediction History</h1>
-      <p className="history-sub">
-        Review your past stock predictions
-      </p>
+      <p className="history-sub">Review your past stock predictions</p>
 
       {items.length === 0 && (
-        <div className="empty-history">
-          No predictions yet
-        </div>
+        <div className="empty-history">No predictions yet</div>
       )}
 
       {items.map((item) => (
@@ -44,6 +41,9 @@ export default function History() {
           <div className="history-main">
             <span className="history-date">{item.date}</span>
             <span className="history-stock">{item.stock}</span>
+            <span className={`history-signal ${item.signal.toLowerCase()}`}>
+              {item.signal}
+            </span>
           </div>
 
           <div className="history-actions">
