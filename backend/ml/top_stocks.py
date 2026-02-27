@@ -5,8 +5,10 @@ def get_top_stocks():
     movers = []
 
     for symbol in ALL_STOCKS:
+        yf_symbol = symbol if symbol.endswith(".NS") else f"{symbol}.NS"
+
         try:
-            data = yf.download(symbol, period="2d", progress=False)
+            data = yf.download(yf_symbol, period="2d", progress=False)
 
             if data.empty or len(data) < 2:
                 continue
@@ -17,15 +19,11 @@ def get_top_stocks():
             percent_change = ((today_close - prev_close) / prev_close) * 100
 
             movers.append({
-                "symbol": symbol,
+                "symbol": symbol.replace(".NS", ""),
                 "change": round(percent_change, 2)
             })
-
         except:
             continue
 
-    # Sort by highest gain
     movers.sort(key=lambda x: x["change"], reverse=True)
-
-    # Return top 5
     return movers[:5]
