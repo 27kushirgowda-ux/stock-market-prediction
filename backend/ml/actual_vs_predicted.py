@@ -1,34 +1,55 @@
-import yfinance as yf
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+from database import init_db
+from routers.auth import router as auth_router
+from routers.history import router as history_router
+from routers.top_gainers import router as top_gainers_router
+
 from ml.analyze import analyze_stock_ml
+from ml.top_stocks import get_top_stocks
+from ml.candles import router as candles_router
+from ml.actual_vs_predicted import get_actual_vs_predicted
 
-def get_actual_vs_predicted(symbol: str):
-    df = yf.download(symbol, period="10d", interval="1d", progress=False)
+app = FastAPI()
 
-    if df.empty or len(df) < 5:
-        return []
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    result = analyze_stock_ml(symbol)
-    if not result:
-        return []
+init_db()
 
-    signal = result["signal"]
+app.include_router(auth_router)
+app.include_router(history_router)
+app.include_router(top_gainers_router)
+app.include_router(candles_router)
 
-    data = []
-    for idx, row in df.iterrows():
-        actual = float(row["Close"])
+class AnalyzeRequest(BaseModel):
+    stock: str
+    date: str
 
-        # simple realistic prediction logic
-        if signal == "BUY":
-            predicted = actual * 1.01
-        elif signal == "SELL":
-            predicted = actual * 0.99
-        else:
-            predicted = actual
+class AnalyzeResponse(BaseModel):
+    signal: str
+    confidence: dict
+    reason: str
 
-        data.append({
-            "date": idx.strftime("%Y-%m-%d"),
-            "actual": round(actual, 2),
-            "predicted": round(predicted, 2)
-        })
+@app.post("/analyze", response_model=AnalyzeResponse)
+def analyze_stock(data: AnalyzeRequest):
+    return analyze_stock_ml(data.stock)
 
-    return data
+@app.get("/top-stocks")
+def top_stocks():
+    return {"stocks": get_top_stocks()}
+
+@app.get("/actual-vs-predicted/{symbol}")
+def actual_vs_predicted(symbol: str):
+    return get_actual_vs_predicted(symbol)
+
+@app.get("/")
+def root():
+    return {"message": "StockAI backend running"}
