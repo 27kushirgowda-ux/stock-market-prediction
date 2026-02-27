@@ -2,8 +2,7 @@ import yfinance as yf
 from backend.ml.analyze import analyze_stock_ml
 
 def get_actual_vs_predicted(symbol: str):
-    # ✅ US STOCKS — NO .NS
-    symbol = symbol.upper()
+    symbol = symbol.upper()   # ✅ US stocks only
 
     df = yf.download(
         symbol,
@@ -12,11 +11,14 @@ def get_actual_vs_predicted(symbol: str):
         progress=False
     )
 
+    # ✅ Guard 1: No price data
     if df.empty or len(df) < 5:
         return []
 
     result = analyze_stock_ml(symbol)
-    if not result:
+
+    # ✅ Guard 2: ML returned None
+    if not result or "signal" not in result:
         return []
 
     signal = result["signal"]
