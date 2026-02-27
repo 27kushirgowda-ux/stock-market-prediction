@@ -2,10 +2,17 @@ import yfinance as yf
 from backend.ml.analyze import analyze_stock_ml
 
 def get_actual_vs_predicted(symbol: str):
-    # ✅ US stocks only (AAPL, TSLA, MSFT etc.)
-    df = yf.download(symbol, period="6mo", interval="1d", progress=False)
+    # ✅ US STOCKS — NO .NS
+    symbol = symbol.upper()
 
-    if df.empty or len(df) < 20:
+    df = yf.download(
+        symbol,
+        period="10d",
+        interval="1d",
+        progress=False
+    )
+
+    if df.empty or len(df) < 5:
         return []
 
     result = analyze_stock_ml(symbol)
