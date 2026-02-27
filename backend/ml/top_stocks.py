@@ -1,39 +1,32 @@
-import yfinance as yf
+# backend/ml/top_stocks.py
 
-STOCKS = [
-    "TCS.NS",
-    "INFY.NS",
-    "RELIANCE.NS",
-    "HDFCBANK.NS",
-    "ICICIBANK.NS",
-    "SBIN.NS",
-    "LT.NS",
-    "ITC.NS",
-]
+import yfinance as yf
+from backend.ml.stock_universe import ALL_STOCKS
 
 def get_top_stocks():
-    gainers = []
+    results = []
 
-    for symbol in STOCKS:
-        try:
-            data = yf.download(symbol, period="2d", interval="1d", progress=False)
+    for symbol in ALL_STOCKS:
+        data = yf.download(
+            symbol,
+            period="2d",
+            interval="1d",
+            progress=False,
+            threads=False   # 🔴 REQUIRED on Render
+        )
 
-            if len(data) < 2:
-                continue
+        if data.empty or len(data) < 2:
+            continue
 
-            prev_close = float(data["Close"].iloc[-2])
-            curr_close = float(data["Close"].iloc[-1])
+        prev_close = float(data["Close"].iloc[-2])
+        last_close = float(data["Close"].iloc[-1])
 
-            change_pct = ((curr_close - prev_close) / prev_close) * 100
+        change_pct = ((last_close - prev_close) / prev_close) * 100
 
-            gainers.append({
-                "symbol": symbol,
-                "price": round(curr_close, 2),
-                "change_percent": round(change_pct, 2)
-            })
+        results.append({
+            "symbol": symbol,
+            "change": round(change_pct, 2)
+        })
 
-        except Exception as e:
-            print(symbol, e)
-
-    gainers.sort(key=lambda x: x["change_percent"], reverse=True)
-    return gainers[:5]
+    results.sort(key=lambda x: x["change"], reverse=True)
+    return results[:5]

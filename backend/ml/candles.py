@@ -1,24 +1,27 @@
+# backend/ml/candles.py
+
 import yfinance as yf
-from fastapi import APIRouter
 
-router = APIRouter(prefix="/candles", tags=["Candles"])
-
-@router.get("/{symbol}")
 def get_candles(symbol: str):
-    symbol = symbol if symbol.endswith(".NS") else f"{symbol}.NS"
-
-    df = yf.download(symbol, period="2mo", interval="1d", progress=False)
+    df = yf.download(
+        symbol,
+        period="5d",
+        interval="15m",
+        progress=False,
+        threads=False
+    )
 
     if df.empty:
         return []
 
-    return [
-        {
-            "date": idx.strftime("%Y-%m-%d"),
+    candles = []
+    for index, row in df.iterrows():
+        candles.append({
+            "time": index.isoformat(),
             "open": float(row["Open"]),
             "high": float(row["High"]),
             "low": float(row["Low"]),
-            "close": float(row["Close"]),
-        }
-        for idx, row in df.iterrows()
-    ]
+            "close": float(row["Close"])
+        })
+
+    return candles
