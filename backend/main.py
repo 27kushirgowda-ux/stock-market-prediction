@@ -8,7 +8,7 @@ from routers.history import router as history_router
 
 from ml.analyze import analyze_stock_ml
 from ml.top_stocks import get_top_stocks
-from routers.candles import get_candles
+from ml.candles import get_candles
 from ml.actual_vs_predicted import get_actual_vs_predicted
 
 app = FastAPI()
