@@ -195,27 +195,3 @@
     font-size: 13px;
   }
 }
-/* ================= MOBILE DASHBOARD ================= */
-@media (max-width: 768px) {
-  .dash-title {
-    font-size: 22px;
-  }
-
-  .dash-card {
-    padding: 18px;
-  }
-
-  .market-table thead {
-    display: none;
-  }
-
-  .market-table tbody tr {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .market-table tbody td {
-    padding: 6px 0;
-  }
-}
