@@ -1,28 +1,44 @@
 import { useEffect, useState } from "react";
 import "../styles/Home.css";
 
+// ✅ USE ENV BASE URL (CRITICAL FIX)
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Home() {
   const [stock, setStock] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+
   const [topStocks, setTopStocks] = useState([]);
+  const [loadingTop, setLoadingTop] = useState(true);
 
-  const userId = localStorage.getItem("user_id") || "1";
+  const userId = localStorage.getItem("user_id");
 
+  // 🔹 FETCH TOP STOCKS + RESTORE LAST SELECTED STOCK
   useEffect(() => {
+    const lastStock = localStorage.getItem("last_stock");
+    if (lastStock) {
+      setStock(lastStock);
+    }
+
     fetch(`${API_BASE_URL}/top-stocks`)
-      .then(res => res.json())
-      .then(data => setTopStocks(data.stocks || []))
-      .catch(() => setTopStocks([]));
+      .then((res) => res.json())
+      .then((data) => {
+        setTopStocks(data.stocks || []);
+        setLoadingTop(false);
+      })
+      .catch(() => setLoadingTop(false));
   }, []);
 
+  // 🔹 ANALYZE STOCK
   const handleAnalyze = async () => {
     if (!stock) return;
 
     setLoading(true);
+    setResult(null);
 
     try {
       const res = await fetch(`${API_BASE_URL}/analyze`, {
@@ -32,60 +48,141 @@ export default function Home() {
       });
 
       const data = await res.json();
+      if (!res.ok) return;
+
       setResult(data);
 
-      // ✅ SAVE FALLBACK HISTORY (LOCAL STORAGE)
-      const historyItem = {
-        id: Date.now(),
-        user_id: userId,
-        stock,
-        date,
-        signal: data.signal,
-        buy_conf: data.confidence.buy,
-        hold_conf: data.confidence.hold,
-        sell_conf: data.confidence.sell,
-      };
+      // SAVE LAST STOCK
+      localStorage.setItem("last_stock", stock);
 
-      const prev = JSON.parse(localStorage.getItem("fallback_history")) || [];
-      localStorage.setItem(
-        "fallback_history",
-        JSON.stringify([historyItem, ...prev])
-      );
-
-    } catch (err) {
-      setResult({
-        signal: "HOLD",
-        confidence: { buy: 0.33, hold: 0.34, sell: 0.33 },
-        reason: "Fallback prediction",
+      // SAVE TO HISTORY
+      await fetch(`${API_BASE_URL}/history`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: userId,
+          stock,
+          date,
+          signal: data.signal,
+          buy_conf: data.confidence.buy,
+          hold_conf: data.confidence.hold,
+          sell_conf: data.confidence.sell,
+        }),
       });
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="page-container">
-      <h1>Stock Analysis</h1>
+  // 🔹 SIGNAL LOGIC (UNCHANGED)
+  const confidence = result?.confidence || {};
+  const maxSignal = result
+    ? Object.keys(confidence).reduce((a, b) =>
+        confidence[a] > confidence[b] ? a : b
+      )
+    : null;
 
+  const arrow = (type) => (type === maxSignal ? "▲" : "▼");
+
+  return (
+    <div className="home-page">
+      <h1 className="page-title">Stock Analysis</h1>
+      <p className="page-sub">
+        AI-powered prediction using Yahoo Finance historical data
+      </p>
+
+      {/* 🔹 TOP GAINERS */}
       <div className="top-stocks-card">
-        <h3>Top Gainers</h3>
-        {topStocks.map(s => (
-          <button key={s.symbol} onClick={() => setStock(s.symbol)}>
-            {s.symbol}
-          </button>
-        ))}
+        <h3>Top Gainers Today</h3>
+
+        {loadingTop ? (
+          <p className="muted">Loading market movers...</p>
+        ) : (
+          <table className="top-stocks-table">
+            <thead>
+              <tr>
+                <th>Stock</th>
+                <th>Change %</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {topStocks.map((s) => (
+                <tr key={s.symbol}>
+                  <td>{s.symbol}</td>
+                  <td className="green">+{s.change}%</td>
+                  <td>
+                    <button
+                      className="select-btn"
+                      onClick={() => setStock(s.symbol)}
+                    >
+                      Select
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
-      <input value={stock} readOnly placeholder="Selected Stock" />
-      <button onClick={handleAnalyze} disabled={loading}>
-        {loading ? "Analyzing..." : "Analyze"}
+      {/* 🔹 INPUTS */}
+      <div className="input-row">
+        <input
+          type="text"
+          value={stock}
+          readOnly
+          className="stock-input"
+        />
+
+        <input
+          type="date"
+          value={date}
+          readOnly
+          className="date-input"
+        />
+      </div>
+
+      {/* 🔹 ANALYZE BUTTON */}
+      <button className="analyze-btn" onClick={handleAnalyze}>
+        {loading ? "Analyzing..." : "Analyze / Predict"}
       </button>
 
+      {/* 🔹 RESULT */}
       {result && (
-        <div>
-          <h3>{result.signal}</h3>
-          <p>{result.reason}</p>
-        </div>
+        <>
+          <div className="signal-card">
+            <h3>Prediction Result</h3>
+
+            <div className={`signal-box buy ${maxSignal === "buy" ? "active" : ""}`}>
+              <span>BUY</span>
+              <strong>
+                Confidence Score: {Math.round(confidence.buy * 100)}% {arrow("buy")}
+              </strong>
+            </div>
+
+            <div className={`signal-box hold ${maxSignal === "hold" ? "active" : ""}`}>
+              <span>HOLD</span>
+              <strong>
+                Confidence Score: {Math.round(confidence.hold * 100)}% {arrow("hold")}
+              </strong>
+            </div>
+
+            <div className={`signal-box sell ${maxSignal === "sell" ? "active" : ""}`}>
+              <span>SELL</span>
+              <strong>
+                Confidence Score: {Math.round(confidence.sell * 100)}% {arrow("sell")}
+              </strong>
+            </div>
+          </div>
+
+          <div className="summary-card">
+            <h3>Why this prediction?</h3>
+            <p>{result.reason}</p>
+          </div>
+        </>
       )}
     </div>
   );
