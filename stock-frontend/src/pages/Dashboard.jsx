@@ -9,6 +9,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function Dashboard() {
   const selectedStock = localStorage.getItem("last_stock");
   const [avpData, setAvpData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!selectedStock) {
@@ -16,39 +17,45 @@ export default function Dashboard() {
       return;
     }
 
+    setLoading(true);
+
     fetch(`${API_BASE_URL}/actual-vs-predicted/${selectedStock}`)
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data)) {
-          setAvpData(data);
-        } else {
-          setAvpData([]);
-        }
+        setAvpData(Array.isArray(data) ? data : []);
       })
-      .catch(() => setAvpData([]));
+      .catch(() => setAvpData([]))
+      .finally(() => setLoading(false));
   }, [selectedStock]);
 
   return (
     <div className="dashboard-page">
       <h1 className="dash-title">Dashboard</h1>
 
-      {/* CANDLESTICK */}
-      <div className="dash-card wide candle-hero">
-        <h3>Candlestick Chart — {selectedStock || "N/A"}</h3>
+      <div className="dashboard-grid">
+        {/* CANDLESTICK */}
+        <div className="dash-card candle-hero">
+          <h3>Candlestick Chart — {selectedStock || "N/A"}</h3>
 
-        {!selectedStock ? (
-          <p className="muted">
-            Analyze a stock on Home page to view chart
-          </p>
-        ) : (
-          <TradingViewChart symbol={selectedStock} />
-        )}
-      </div>
+          {!selectedStock ? (
+            <p className="muted">
+              Analyze a stock on Home page to view chart
+            </p>
+          ) : (
+            <TradingViewChart symbol={selectedStock} />
+          )}
+        </div>
 
-      {/* ACTUAL VS PREDICTED */}
-      <div className="dash-card wide avp-section light-chart">
-        <h3>Actual vs Predicted Price</h3>
-        <ActualVsPredicted data={avpData} />
+        {/* ACTUAL VS PREDICTED */}
+        <div className="dash-card avp-section">
+          <h3>Actual vs Predicted Price</h3>
+
+          {loading ? (
+            <p className="muted">Loading prediction...</p>
+          ) : (
+            <ActualVsPredicted data={avpData} />
+          )}
+        </div>
       </div>
     </div>
   );

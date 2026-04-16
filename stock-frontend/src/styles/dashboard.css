@@ -11,6 +11,11 @@
   letter-spacing: 0.5px;
 }
 
+/* ================= SPACING SYSTEM ================= */
+.dashboard-page > * + * {
+  margin-top: 20px;
+}
+
 /* ================= CARDS ================= */
 .dash-card {
   background: linear-gradient(
@@ -21,16 +26,17 @@
   border-radius: 20px;
   padding: 26px 30px;
   box-shadow: 0 0 50px rgba(34, 197, 94, 0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  /* 🔥 PREMIUM EFFECT */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  transition: all 0.25s ease;
 }
 
 .dash-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 0 60px rgba(34, 197, 94, 0.1);
-}
-
-.dash-card.wide {
-  margin-top: 34px;
 }
 
 /* ================= SECTION TITLES ================= */
@@ -60,6 +66,11 @@
   border-collapse: separate;
   border-spacing: 0 12px;
   font-size: 14px;
+
+  /* 📱 MOBILE FIX */
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .market-table thead th {
@@ -123,75 +134,101 @@
   color: #22c55e;
 }
 
-/* ================= CANDLE HERO SECTION ================= */
+/* ================= CANDLE HERO ================= */
 .dash-card.candle-hero {
   padding: 30px 32px;
   border: 1px solid rgba(34, 197, 94, 0.08);
+  box-shadow: 0 0 60px rgba(34, 197, 94, 0.08);
 }
 
-/* ================= ACTUAL VS PREDICTED CARD ================= */
+/* ================= AVP SECTION ================= */
 .dash-card.avp-section {
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 0 30px rgba(34, 197, 94, 0.08);
   min-height: 420px;
+  overflow: hidden;
 }
 
-/* Chart container height */
+/* ================= CHART ================= */
 .avp-chart {
   width: 100%;
   height: 340px;
 }
 
-/* ================= DARK TRADINGVIEW STYLE (FIX) ================= */
-
-/* Force dark background inside Recharts SVG */
+/* ================= DARK CHART FIX ================= */
 .avp-section svg {
   background: #020617;
   border-radius: 12px;
 }
 
-/* Grid lines */
+/* GRID */
 .avp-section .recharts-cartesian-grid-horizontal line,
 .avp-section .recharts-cartesian-grid-vertical line {
   stroke: rgba(148, 163, 184, 0.15);
 }
 
-/* Axis lines */
-.avp-section .recharts-cartesian-axis-line {
-  stroke: #334155;
-}
-
-/* Axis ticks */
+/* AXIS */
+.avp-section .recharts-cartesian-axis-line,
 .avp-section .recharts-cartesian-axis-tick line {
   stroke: #334155;
 }
 
-/* Axis text */
+/* TEXT */
 .avp-section .recharts-text,
 .avp-section .recharts-cartesian-axis-tick-value {
   fill: #cbd5f5;
   font-size: 12px;
 }
 
-/* Tooltip dark */
+/* TOOLTIP */
 .recharts-tooltip-wrapper .recharts-default-tooltip {
   background: #020617 !important;
   border: 1px solid #334155 !important;
   color: #e5e7eb !important;
 }
 
-/* Legend text */
+/* LEGEND */
 .recharts-legend-item-text {
   color: #cbd5f5 !important;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= 📱 MOBILE ================= */
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding: 12px;
+  }
+
+  .dash-title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .dash-card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .dash-card h3 {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  .highlight {
+    font-size: 20px;
+  }
+
+  .muted {
+    font-size: 12px;
+  }
+
+  .avp-chart {
+    height: 240px;
+  }
+}
+
+/* ================= 💻 TABLET ================= */
 @media (max-width: 1200px) {
   .dashboard-page {
     padding: 20px;
-  }
-
-  .market-table {
-    font-size: 13px;
   }
 }

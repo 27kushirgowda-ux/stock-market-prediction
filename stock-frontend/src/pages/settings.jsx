@@ -7,32 +7,43 @@ export default function Settings({ onLogout }) {
   const [showQR, setShowQR] = useState(false);
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    if (!confirmLogout) return;
+
+    localStorage.removeItem("user");
+    onLogout();
+    navigate("/signin");
+  };
+
   return (
     <div className="settings-page">
-      <h1>Settings</h1>
+      <h1 className="settings-title">Settings</h1>
 
       {/* PROFILE */}
       <div className="settings-card">
-        <h3>◎ Profile</h3>
-        <p>Name: {user?.name || "User"}</p>
-        <p>Email: {user?.email || "Not available"}</p>
+        <h3>👤 Profile</h3>
+        <div className="profile-info">
+          <p><span>Name:</span> {user?.name || "User"}</p>
+          <p><span>Email:</span> {user?.email || "Not available"}</p>
+        </div>
       </div>
 
       {/* FEEDBACK */}
-      <div
-        className="settings-card"
-        style={{ cursor: "pointer" }}
-        onClick={() => setShowQR(!showQR)}
-      >
-        <h3>◈ Feedback</h3>
-        <p>Click to {showQR ? "hide" : "view"} QR code</p>
+      <div className="settings-card">
+        <div
+          className="feedback-header"
+          onClick={() => setShowQR(!showQR)}
+        >
+          <h3>💬 Feedback</h3>
+          <span>{showQR ? "▲" : "▼"}</span>
+        </div>
 
         {showQR && (
           <div className="qr-box">
             <img
               src={`${window.location.origin}/feedback-qr.png`}
               alt="Feedback QR"
-              width="160"
             />
             <p>Scan to submit feedback</p>
           </div>
@@ -40,16 +51,9 @@ export default function Settings({ onLogout }) {
       </div>
 
       {/* LOGOUT */}
-      <div className="settings-card">
-        <h3>⇦ Logout</h3>
-        <button
-          className="logout-btn"
-          onClick={() => {
-            localStorage.removeItem("user");
-            onLogout();
-            navigate("/signin"); // ✅ redirect after logout
-          }}
-        >
+      <div className="settings-card danger">
+        <h3>🚪 Logout</h3>
+        <button className="logout-btn" onClick={handleLogout}>
           Logout
         </button>
       </div>

@@ -5,23 +5,93 @@
   background: radial-gradient(circle at top, #020617, #000);
 }
 
-/* ===== SIDEBAR (FIXED) ===== */
+/* ===== SIDEBAR ===== */
 .sidebar {
   width: 240px;
-  position: fixed;     /* 🔥 FIX */
+  position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
   background: #0f172a;
   overflow-y: auto;
-  z-index: 100;
+  z-index: 1000;
+  transition: transform 0.3s ease, width 0.3s ease;
+}
+
+/* COLLAPSED (DESKTOP) */
+.sidebar.collapsed {
+  width: 70px;
 }
 
 /* ===== PAGE CONTENT ===== */
 .page-content {
-  margin-left: 240px;  /* 🔥 VERY IMPORTANT */
+  margin-left: 240px;
   flex: 1;
   padding: 24px;
-  height: 100vh;
-  overflow-y: auto;    /* 🔥 ONLY CONTENT SCROLLS */
+  min-height: 100vh;
+  overflow-y: auto;
+  transition: margin-left 0.3s ease;
+}
+
+/* SHIFT CONTENT WHEN COLLAPSED */
+.sidebar.collapsed ~ .page-content {
+  margin-left: 70px;
+}
+
+/* ================= 📱 MOBILE ================= */
+@media (max-width: 768px) {
+
+  /* SIDEBAR HIDDEN BY DEFAULT */
+  .sidebar {
+    transform: translateX(-100%);
+    width: 220px;
+  }
+
+  /* OPEN SIDEBAR */
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* PAGE FULL WIDTH */
+  .page-content {
+    margin-left: 0;
+    padding: 16px;
+    margin-top: 50px; /* space for mobile topbar */
+  }
+}
+
+/* ================= OVERLAY ================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* ================= MOBILE TOPBAR ================= */
+.mobile-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background: #020617;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  color: white;
+  z-index: 1100;
+}
+
+.mobile-topbar button {
+  font-size: 20px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.mobile-title {
+  font-weight: 600;
 }

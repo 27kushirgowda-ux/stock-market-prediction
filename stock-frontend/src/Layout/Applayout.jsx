@@ -6,9 +6,10 @@ export default function AppLayout() {
   return (
     <div className="app-layout">
       <Sidebar />
-      <div className="page-content">
+
+      <main className="page-content">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 }

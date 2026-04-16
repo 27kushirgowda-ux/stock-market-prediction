@@ -1,32 +1,31 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function TradingViewChart({ symbol }) {
   const containerRef = useRef(null);
+  const widgetRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // ✅ SAFE SYMBOL MAPPER (THIS IS THE FIX)
+  // 📱 Detect screen
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // ✅ Symbol mapper
   const mapToTradingView = (sym) => {
     if (!sym) return "";
 
-    // NSE stocks
     if (sym.endsWith(".NS")) {
       const base = sym.replace(".NS", "");
 
-      // TradingView widget blocks these on NSE
-      const forceBSE = [
-        "AXISBANK",
-        "ICICIBANK",
-        "SBIN",
-        "RELIANCE",
-      ];
+      const forceBSE = ["AXISBANK", "ICICIBANK", "SBIN", "RELIANCE"];
 
-      if (forceBSE.includes(base)) {
-        return `BSE:${base}`;
-      }
-
+      if (forceBSE.includes(base)) return `BSE:${base}`;
       return `NSE:${base}`;
     }
 
-    // US stocks
     return `NASDAQ:${sym}`;
   };
 
@@ -35,24 +34,26 @@ export default function TradingViewChart({ symbol }) {
 
     const tvSymbol = mapToTradingView(symbol);
 
-    containerRef.current.innerHTML = "";
+    // 🧹 Clean previous widget
+    if (widgetRef.current) {
+      containerRef.current.innerHTML = "";
+      widgetRef.current = null;
+    }
 
-    const script = document.createElement("script");
-    script.src = "https://s3.tradingview.com/tv.js";
-    script.async = true;
-
-    script.onload = () => {
+    // ⚡ Load script only once
+    const createWidget = () => {
       if (!window.TradingView) return;
 
-      new window.TradingView.widget({
-        container_id: "tv_chart",
+      widgetRef.current = new window.TradingView.widget({
         symbol: tvSymbol,
         interval: "D",
         theme: "dark",
         style: "1",
         autosize: true,
 
-        hide_top_toolbar: false,
+        container_id: containerRef.current.id,
+
+        hide_top_toolbar: isMobile, // 📱 cleaner mobile UI
         hide_legend: false,
         allow_symbol_change: true,
         enable_publishing: false,
@@ -63,16 +64,24 @@ export default function TradingViewChart({ symbol }) {
       });
     };
 
-    containerRef.current.appendChild(script);
-  }, [symbol]);
+    if (!window.TradingView) {
+      const script = document.createElement("script");
+      script.src = "https://s3.tradingview.com/tv.js";
+      script.async = true;
+      script.onload = createWidget;
+      document.body.appendChild(script);
+    } else {
+      createWidget();
+    }
+  }, [symbol, isMobile]);
 
   return (
     <div
       ref={containerRef}
-      id="tv_chart"
+      id="tv_chart_container"
       style={{
         width: "100%",
-        height: "520px",
+        height: isMobile ? "350px" : "520px", // 📱 responsive height
         borderRadius: "14px",
         overflow: "hidden",
       }}
