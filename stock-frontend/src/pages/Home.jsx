@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/Home.css";
 
+// ✅ USE ENV BASE URL (CRITICAL FIX)
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Home() {
@@ -16,9 +17,12 @@ export default function Home() {
 
   const userId = localStorage.getItem("user_id");
 
+  // 🔹 FETCH TOP STOCKS + RESTORE LAST SELECTED STOCK
   useEffect(() => {
     const lastStock = localStorage.getItem("last_stock");
-    if (lastStock) setStock(lastStock);
+    if (lastStock) {
+      setStock(lastStock);
+    }
 
     fetch(`${API_BASE_URL}/top-stocks`)
       .then((res) => res.json())
@@ -29,8 +33,9 @@ export default function Home() {
       .catch(() => setLoadingTop(false));
   }, []);
 
+  // 🔹 ANALYZE STOCK
   const handleAnalyze = async () => {
-    if (!stock) return alert("Please select a stock");
+    if (!stock) return;
 
     setLoading(true);
     setResult(null);
@@ -46,8 +51,11 @@ export default function Home() {
       if (!res.ok) return;
 
       setResult(data);
+
+      // SAVE LAST STOCK
       localStorage.setItem("last_stock", stock);
 
+      // SAVE TO HISTORY
       await fetch(`${API_BASE_URL}/history`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,6 +76,7 @@ export default function Home() {
     }
   };
 
+  // 🔹 SIGNAL LOGIC (UNCHANGED)
   const confidence = result?.confidence || {};
   const maxSignal = result
     ? Object.keys(confidence).reduce((a, b) =>
@@ -75,112 +84,105 @@ export default function Home() {
       )
     : null;
 
+  const arrow = (type) => (type === maxSignal ? "▲" : "▼");
+
   return (
     <div className="home-page">
       <h1 className="page-title">Stock Analysis</h1>
       <p className="page-sub">
-        AI-powered prediction using historical data
+        AI-powered prediction using Yahoo Finance historical data
       </p>
 
-      {/* 🔥 TOP STOCKS → MOBILE FRIENDLY */}
+      {/* 🔹 TOP GAINERS */}
       <div className="top-stocks-card">
-        <h3>Top Gainers</h3>
+        <h3>Top Gainers Today</h3>
 
         {loadingTop ? (
-          <p className="muted">Loading...</p>
+          <p className="muted">Loading market movers...</p>
         ) : (
-          <div className="top-stocks-grid">
-            {topStocks.map((s) => (
-              <div key={s.symbol} className="stock-item">
-                <div>
-                  <strong>{s.symbol}</strong>
-                  <p className="green">+{s.change}%</p>
-                </div>
-
-                <button onClick={() => setStock(s.symbol)}>
-                  Select
-                </button>
-              </div>
-            ))}
-          </div>
+          <table className="top-stocks-table">
+            <thead>
+              <tr>
+                <th>Stock</th>
+                <th>Change %</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {topStocks.map((s) => (
+                <tr key={s.symbol}>
+                  <td>{s.symbol}</td>
+                  <td className="green">+{s.change}%</td>
+                  <td>
+                    <button
+                      className="select-btn"
+                      onClick={() => setStock(s.symbol)}
+                    >
+                      Select
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
 
-      {/* INPUTS */}
+      {/* 🔹 INPUTS */}
       <div className="input-row">
-        <div className="input-group">
-          <label>Stock Symbol</label>
-          <input
-            type="text"
-            value={stock}
-            onChange={(e) => setStock(e.target.value.toUpperCase())}
-            placeholder="e.g., AAPL"
-          />
-        </div>
+        <input
+          type="text"
+          value={stock}
+          readOnly
+          className="stock-input"
+        />
 
-        <div className="input-group">
-          <label>Date</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-        </div>
-
-        <button
-          className="btn-analyze"
-          onClick={handleAnalyze}
-          disabled={loading || !stock}
-        >
-          {loading ? "Analyzing..." : "Analyze"}
-        </button>
+        <input
+          type="date"
+          value={date}
+          readOnly
+          className="date-input"
+        />
       </div>
 
-      {/* RESULTS */}
+      {/* 🔹 ANALYZE BUTTON */}
+      <button className="analyze-btn" onClick={handleAnalyze}>
+        {loading ? "Analyzing..." : "Analyze / Predict"}
+      </button>
+
+      {/* 🔹 RESULT */}
       {result && (
-        <div className="results-card">
-          <h2>Analysis Results for {result.symbol}</h2>
-          <div className="signal-display">
-            <div className={`signal ${maxSignal}`}>
-              <strong>{maxSignal?.toUpperCase()}</strong>
+        <>
+          <div className="signal-card">
+            <h3>Prediction Result</h3>
+
+            <div className={`signal-box buy ${maxSignal === "buy" ? "active" : ""}`}>
+              <span>BUY</span>
+              <strong>
+                Confidence Score: {Math.round(confidence.buy * 100)}% {arrow("buy")}
+              </strong>
+            </div>
+
+            <div className={`signal-box hold ${maxSignal === "hold" ? "active" : ""}`}>
+              <span>HOLD</span>
+              <strong>
+                Confidence Score: {Math.round(confidence.hold * 100)}% {arrow("hold")}
+              </strong>
+            </div>
+
+            <div className={`signal-box sell ${maxSignal === "sell" ? "active" : ""}`}>
+              <span>SELL</span>
+              <strong>
+                Confidence Score: {Math.round(confidence.sell * 100)}% {arrow("sell")}
+              </strong>
             </div>
           </div>
 
-          <div className="confidence-bars">
-            <div className="confidence-item">
-              <span>Buy</span>
-              <div className="bar">
-                <div
-                  className="fill buy"
-                  style={{ width: `${confidence.buy * 100}%` }}
-                ></div>
-              </div>
-              <span>{(confidence.buy * 100).toFixed(1)}%</span>
-            </div>
-
-            <div className="confidence-item">
-              <span>Hold</span>
-              <div className="bar">
-                <div
-                  className="fill hold"
-                  style={{ width: `${confidence.hold * 100}%` }}
-                ></div>
-              </div>
-              <span>{(confidence.hold * 100).toFixed(1)}%</span>
-            </div>
-
-            <div className="confidence-item">
-              <span>Sell</span>
-              <div className="bar">
-                <div
-                  className="fill sell"
-                  style={{ width: `${confidence.sell * 100}%` }}
-                ></div>
-              </div>
-              <span>{(confidence.sell * 100).toFixed(1)}%</span>
-            </div>
+          <div className="summary-card">
+            <h3>Why this prediction?</h3>
+            <p>{result.reason}</p>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
