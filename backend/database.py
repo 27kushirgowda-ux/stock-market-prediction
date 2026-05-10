@@ -4,38 +4,30 @@ import sqlite3
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = os.path.join(BASE_DIR, "stockai.db")
 
-
 def get_db():
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
     return conn
 
-
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
 
-    # USERS TABLE
+    # 1. USERS TABLE (Optional if using Firebase, but good for local metadata)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            uid TEXT PRIMARY KEY,  -- 👈 Use Firebase UID as the primary key
             name TEXT,
             email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
-    # SAFE MIGRATION
-    try:
-        cursor.execute("ALTER TABLE users ADD COLUMN name TEXT")
-    except sqlite3.OperationalError:
-        pass
-
-    # HISTORY TABLE
+    # 2. HISTORY TABLE
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
+            user_id TEXT NOT NULL,  -- 👈 Changed to TEXT to support Firebase UIDs
             stock TEXT NOT NULL,
             date TEXT NOT NULL,
             signal TEXT NOT NULL,

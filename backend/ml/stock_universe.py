@@ -1,5 +1,0 @@
-US_STOCKS = [
-    "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL",
-    "META", "TSLA", "NFLX", "AMD", "INTC"
-]
-ALL_STOCKS = US_STOCKS 
