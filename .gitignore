@@ -11,3 +11,9 @@ venv/
 # Build
 dist/
 build/
+
+backend/serviceAccount.json
+backend/stockai.db
+backend/__pycache__/
+node_modules/
+.env

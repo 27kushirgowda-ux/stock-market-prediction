@@ -1,83 +1,98 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase"; 
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { User, Mail, Lock, UserPlus } from "lucide-react"; 
 import "../styles/auth.css";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Signup() {
   const navigate = useNavigate();
-
+  
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSignup = async () => {
+  const handleSignup = async (e) => {
+    e.preventDefault();
     setError("");
-    setSuccess("");
+    setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.detail || "Signup failed");
-        return;
-      }
-
-      setSuccess("Signup successful! Please sign in.");
-
-      setTimeout(() => {
-        navigate("/signin");
-      }, 1500);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: name });
+      
+      // Navigate to home after successful registration
+      navigate("/home");
     } catch (err) {
-      setError("Backend not reachable");
+      if (err.code === "auth/email-already-in-use") {
+        setError("This email is already registered.");
+      } else if (err.code === "auth/weak-password") {
+        setError("Password should be at least 6 characters.");
+      } else {
+        setError("Signup failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-card">
-        <h2>Sign Up</h2>
-        <p className="auth-sub">Create your StockAI account</p>
+    <div className="auth-container">
+      <div className="auth-card signup-card">
+        <div className="auth-header">
+          <h1>Create Account</h1>
+          <p>Join <span className="brand-accent">StockAI</span> to start analyzing</p>
+        </div>
 
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <form onSubmit={handleSignup} className="auth-form">
+          <div className="input-field">
+            <User className="input-icon" size={18} />
+            <input
+              type="text"
+              placeholder="Full Name"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <div className="input-field">
+            <Mail className="input-icon" size={18} />
+            <input
+              type="email"
+              placeholder="Email Address"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <div className="input-field">
+            <Lock className="input-icon" size={18} />
+            <input
+              type="password"
+              placeholder="Password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
-        {error && <p className="auth-error">{error}</p>}
-        {success && <p className="auth-success">{success}</p>}
+          {error && <div className="error-toast">{error}</div>}
 
-        <button className="primary-btn" onClick={handleSignup}>
-          Sign Up
-        </button>
+          <button type="submit" className="signup-btn" disabled={loading}>
+            {loading ? "Creating Profile..." : "Create Account"}
+            {!loading && <UserPlus size={18} />}
+          </button>
+        </form>
 
-        <p className="auth-switch">
+        <p className="auth-footer">
           Already have an account?{" "}
-          <span onClick={() => navigate("/signin")}>Sign in</span>
+          <span className="link" onClick={() => navigate("/signin")}>
+            Sign in
+          </span>
         </p>
       </div>
     </div>

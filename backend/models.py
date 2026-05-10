@@ -1,22 +1,25 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
-from database import Base
 
+# Define the Base class for your models
 Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
+    # uid is the unique string from Firebase
+    uid = Column(String, primary_key=True, index=True) 
+    name = Column(String)
     email = Column(String, unique=True, index=True)
-    password = Column(String)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class History(Base):
     __tablename__ = "history"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    # Changed to String to store the Firebase UID
+    user_id = Column(String, index=True) 
     stock = Column(String)
     date = Column(String)
     signal = Column(String)
