@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useAuth } from "./context/AuthContext"; // 👈 Import your hook
 
 import Landing from "./pages/Landing";
 import Signin from "./pages/Signin";
@@ -11,36 +11,33 @@ import History from "./pages/History";
 import AppLayout from "./Layout/Applayout";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, loading } = useAuth(); // 👈 Get user and loading state
+
+  // Prevent redirecting while Firebase is still checking the session
+  if (loading) return <div className="loading-screen">Loading StockAI...</div>;
 
   return (
     <Routes>
       {/* LANDING */}
       <Route
         path="/"
-        element={isLoggedIn ? <Navigate to="/home" /> : <Landing />}
+        element={user ? <Navigate to="/home" /> : <Landing />}
       />
 
       {/* AUTH */}
       <Route
         path="/signin"
-        element={
-          isLoggedIn ? (
-            <Navigate to="/home" />
-          ) : (
-            <Signin onLogin={() => setIsLoggedIn(true)} />
-          )
-        }
+        element={user ? <Navigate to="/home" /> : <Signin />}
       />
 
       <Route
         path="/signup"
-        element={isLoggedIn ? <Navigate to="/home" /> : <Signup />}
+        element={user ? <Navigate to="/home" /> : <Signup />}
       />
 
       {/* PROTECTED ROUTES */}
       <Route
-        element={isLoggedIn ? <AppLayout /> : <Navigate to="/signin" />}
+        element={user ? <AppLayout /> : <Navigate to="/signin" />}
       >
         <Route path="/home" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -48,7 +45,7 @@ function App() {
         <Route path="/history" element={<History />} />
         <Route
           path="/settings"
-          element={<Settings onLogout={() => setIsLoggedIn(false)} />}
+          element={<Settings />}
         />
       </Route>
 

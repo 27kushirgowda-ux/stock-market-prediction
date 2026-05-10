@@ -1,97 +1,29 @@
-/* ===== APP LAYOUT ===== */
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background: radial-gradient(circle at top, #020617, #000);
+  background-color: #020617; /* Deep Slate */
 }
 
-/* ===== SIDEBAR ===== */
-.sidebar {
-  width: 240px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  background: #0f172a;
-  overflow-y: auto;
-  z-index: 1000;
-  transition: transform 0.3s ease, width 0.3s ease;
-}
-
-/* COLLAPSED (DESKTOP) */
-.sidebar.collapsed {
-  width: 70px;
-}
-
-/* ===== PAGE CONTENT ===== */
 .page-content {
-  margin-left: 240px;
   flex: 1;
-  padding: 24px;
-  min-height: 100vh;
-  overflow-y: auto;
+  margin-left: 260px; /* Width of expanded sidebar */
   transition: margin-left 0.3s ease;
+  padding: 30px;
 }
 
-/* SHIFT CONTENT WHEN COLLAPSED */
-.sidebar.collapsed ~ .page-content {
-  margin-left: 70px;
+/* When sidebar is small, move content closer to the edge */
+.page-content.collapsed-offset {
+  margin-left: 85px;
 }
 
-/* ================= 📱 MOBILE ================= */
+.content-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 @media (max-width: 768px) {
-
-  /* SIDEBAR HIDDEN BY DEFAULT */
-  .sidebar {
-    transform: translateX(-100%);
-    width: 220px;
-  }
-
-  /* OPEN SIDEBAR */
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  /* PAGE FULL WIDTH */
   .page-content {
     margin-left: 0;
-    padding: 16px;
-    margin-top: 50px; /* space for mobile topbar */
+    padding-top: 80px; /* Space for mobile header */
   }
-}
-
-/* ================= OVERLAY ================= */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-}
-
-/* ================= MOBILE TOPBAR ================= */
-.mobile-topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 50px;
-  background: #020617;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 16px;
-  color: white;
-  z-index: 1100;
-}
-
-.mobile-topbar button {
-  font-size: 20px;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
-.mobile-title {
-  font-weight: 600;
 }

@@ -1,234 +1,234 @@
-/* ================= BASE ================= */
-.dashboard-page {
-  padding: 32px 40px;
-  color: #e5e7eb;
+/* ============================================================
+   DASHBOARD WRAPPER & HEADER
+============================================================ */
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
 }
 
 .dash-title {
-  font-size: 30px;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.dash-subtitle {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+.highlight {
+  color: #22c55e;
   font-weight: 700;
-  margin-bottom: 24px;
-  letter-spacing: 0.5px;
 }
 
-/* ================= SPACING SYSTEM ================= */
-.dashboard-page > * + * {
-  margin-top: 20px;
+/* AI Status Badge */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  padding: 10px 18px;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
-/* ================= CARDS ================= */
+/* ============================================================
+   DASHBOARD GRID SYSTEM
+============================================================ */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr; /* Main chart gets 60% width */
+  gap: 24px;
+  align-items: start;
+}
+
+/* Stack charts on smaller desktops and tablets */
+@media (max-width: 1150px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   PREMIUM CARD STYLING
+============================================================ */
 .dash-card {
   background: linear-gradient(
     180deg,
-    rgba(15, 23, 42, 0.92),
-    rgba(2, 6, 23, 0.95)
+    rgba(15, 23, 42, 0.6),
+    rgba(2, 6, 23, 0.8)
   );
-  border-radius: 20px;
-  padding: 26px 30px;
-  box-shadow: 0 0 50px rgba(34, 197, 94, 0.06);
-
-  /* 🔥 PREMIUM EFFECT */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  transition: all 0.25s ease;
+  border-radius: 24px;
+  padding: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dash-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 60px rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -15px rgba(34, 197, 94, 0.1);
 }
 
-/* ================= SECTION TITLES ================= */
-.dash-card h3 {
-  font-size: 18px;
+.card-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-info h3 {
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 18px;
-  color: #22c55e;
-  letter-spacing: 0.4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f8fafc;
 }
 
-/* ================= TEXT ================= */
-.highlight {
-  font-size: 26px;
-  color: #22c55e;
+.badge {
+  background: #3b82f633;
+  color: #60a5fa;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
   font-weight: 700;
 }
 
-.muted {
-  color: #9ca3af;
-  font-size: 14px;
+.badge-alt {
+  background: #10b98133;
+  color: #34d399;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
-/* ================= TABLE ================= */
-.market-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 12px;
-  font-size: 14px;
-
-  /* 📱 MOBILE FIX */
-  display: block;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-.market-table thead th {
-  text-align: left;
-  color: #94a3b8;
-  font-weight: 600;
-  padding: 8px 16px;
-  font-size: 13px;
-  letter-spacing: 0.4px;
-}
-
-.market-table tbody tr {
-  background: rgba(15, 23, 42, 0.7);
+/* ============================================================
+   CHART CONTAINERS
+============================================================ */
+.chart-wrapper {
   border-radius: 16px;
-  transition: background 0.2s ease;
-}
-
-.market-table tbody tr:hover {
-  background: rgba(30, 41, 59, 0.95);
-}
-
-.market-table tbody td {
-  padding: 16px;
-  font-weight: 500;
-  white-space: nowrap;
-  font-size: 14px;
-}
-
-.market-table tbody tr td:first-child {
-  border-radius: 16px 0 0 16px;
-}
-
-.market-table tbody tr td:last-child {
-  border-radius: 0 16px 16px 0;
-}
-
-/* ================= COLORS ================= */
-.symbol {
-  font-weight: 700;
-  color: #38bdf8;
-  font-size: 15px;
-}
-
-.green {
-  color: #22c55e;
-  font-weight: 600;
-}
-
-.red {
-  color: #ef4444;
-  font-weight: 600;
-}
-
-/* ================= MINI SPARK ================= */
-.spark {
-  font-size: 16px;
-  letter-spacing: 1px;
-}
-
-.spark.green {
-  color: #22c55e;
-}
-
-/* ================= CANDLE HERO ================= */
-.dash-card.candle-hero {
-  padding: 30px 32px;
-  border: 1px solid rgba(34, 197, 94, 0.08);
-  box-shadow: 0 0 60px rgba(34, 197, 94, 0.08);
-}
-
-/* ================= AVP SECTION ================= */
-.dash-card.avp-section {
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 0 30px rgba(34, 197, 94, 0.08);
-  min-height: 420px;
   overflow: hidden;
-}
-
-/* ================= CHART ================= */
-.avp-chart {
-  width: 100%;
-  height: 340px;
-}
-
-/* ================= DARK CHART FIX ================= */
-.avp-section svg {
   background: #020617;
-  border-radius: 12px;
+  min-height: 500px;
 }
 
-/* GRID */
-.avp-section .recharts-cartesian-grid-horizontal line,
-.avp-section .recharts-cartesian-grid-vertical line {
-  stroke: rgba(148, 163, 184, 0.15);
+.prediction-content {
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* AXIS */
-.avp-section .recharts-cartesian-axis-line,
-.avp-section .recharts-cartesian-axis-tick line {
-  stroke: #334155;
+/* ============================================================
+   RECHARTS DARK OVERRIDES (For ActualVsPredicted)
+============================================================ */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(148, 163, 184, 0.08);
 }
 
-/* TEXT */
-.avp-section .recharts-text,
-.avp-section .recharts-cartesian-axis-tick-value {
-  fill: #cbd5f5;
-  font-size: 12px;
+.recharts-text {
+  fill: #64748b !important;
+  font-weight: 500;
 }
 
-/* TOOLTIP */
-.recharts-tooltip-wrapper .recharts-default-tooltip {
-  background: #020617 !important;
-  border: 1px solid #334155 !important;
-  color: #e5e7eb !important;
-}
-
-/* LEGEND */
 .recharts-legend-item-text {
-  color: #cbd5f5 !important;
+  color: #94a3b8 !important;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* ================= 📱 MOBILE ================= */
-@media (max-width: 768px) {
-  .dashboard-page {
-    padding: 12px;
-  }
+/* ============================================================
+   EMPTY & LOADING STATES
+============================================================ */
+.empty-dashboard {
+  text-align: center;
+  padding: 100px 20px;
+  background: rgba(15, 23, 42, 0.3);
+  border: 2px dashed rgba(255, 255, 255, 0.05);
+  border-radius: 32px;
+}
 
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.loader-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(34, 197, 94, 0.1);
+  border-top-color: #22c55e;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   ANIMATIONS & MOBILE
+============================================================ */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pulse-icon {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .dash-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
   .dash-title {
-    font-size: 20px;
-    margin-bottom: 16px;
+    font-size: 1.5rem;
   }
 
   .dash-card {
-    padding: 16px;
-    border-radius: 14px;
-  }
-
-  .dash-card h3 {
-    font-size: 15px;
-    margin-bottom: 12px;
-  }
-
-  .highlight {
-    font-size: 20px;
-  }
-
-  .muted {
-    font-size: 12px;
-  }
-
-  .avp-chart {
-    height: 240px;
-  }
-}
-
-/* ================= 💻 TABLET ================= */
-@media (max-width: 1200px) {
-  .dashboard-page {
     padding: 20px;
   }
 }

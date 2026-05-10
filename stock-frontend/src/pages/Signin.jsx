@@ -1,74 +1,81 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase"; 
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { Mail, Lock, LogIn } from "lucide-react"; // Adding icons for a pro look
 import "../styles/auth.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-export default function Signin({ onLogin }) {
+export default function Signin() {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSignin = async () => {
+  const handleSignin = async (e) => {
+    e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.detail || "Invalid credentials");
-        return;
-      }
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          id: data.user_id,
-          name: data.name,
-          email: data.email,
-        })
-      );
-
-      onLogin && onLogin();
-      navigate("/home");
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/home"); // Updated to match your main landing page
     } catch (err) {
-      setError("Backend not reachable");
+      if (err.code === "auth/invalid-credential") {
+        setError("Invalid email or password.");
+      } else {
+        setError("Access denied. Please check your connection.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="auth-wrapper">
+    <div className="auth-container">
       <div className="auth-card">
-        <h2>Sign In</h2>
-        <p className="auth-sub">Access your stock analysis dashboard</p>
+        <div className="auth-header">
+          <h1>Welcome Back</h1>
+          <p>Login to your <span className="brand-accent">StockAI</span> account</p>
+        </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <form onSubmit={handleSignin} className="auth-form">
+          <div className="input-field">
+            <Mail className="input-icon" size={18} />
+            <input
+              type="email"
+              placeholder="Email Address"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <div className="input-field">
+            <Lock className="input-icon" size={18} />
+            <input
+              type="password"
+              placeholder="Password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
-        {error && <p className="auth-error">{error}</p>}
+          {error && <div className="error-toast">{error}</div>}
 
-        <button className="primary-btn" onClick={handleSignin}>
-          Sign In
-        </button>
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Authenticating..." : "Sign In"}
+            {!loading && <LogIn size={18} />}
+          </button>
+        </form>
+
+        <p className="auth-footer">
+          New to StockAI?{" "}
+          <span className="link" onClick={() => navigate("/signup")}>
+            Create an account
+          </span>
+        </p>
       </div>
     </div>
   );

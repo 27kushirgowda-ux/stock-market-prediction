@@ -5,37 +5,46 @@ export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="landing">
-      <div className="hero">
-        <div className="hero-text">
-          <h4>AI-POWERED STOCK ANALYSIS</h4>
+    <div className="landing-container">
+      {/* Subtle background overlay */}
+      <div className="grid-overlay"></div>
 
+      <nav className="simple-nav">
+        <div className="logo">Stock<span>AI</span></div>
+        <div className="nav-auth">
+          <button className="nav-link" onClick={() => navigate("/signin")}>Login</button>
+          <button className="nav-btn-sm" onClick={() => navigate("/signup")}>Get Started</button>
+        </div>
+      </nav>
+
+      <section className="hero-section">
+        <div className="hero-card">
+          <span className="badge">Powered by Machine Learning</span>
           <h1>
-            Smarter Stock Decisions <br />
-            Using AI & Market Data
+            Predict the Market <br /> 
+            <span className="highlight">with Confidence</span>
           </h1>
-
           <p>
-            Analyze stocks using real-time and historical data from Yahoo Finance.
+            Leverage advanced AI models to analyze Yahoo Finance data and 
+            stay ahead of market trends with real-time insights.
           </p>
 
-          <div className="landing-buttons">
+          <div className="button-group">
             <button
-              className="landing-btn primary"
-              onClick={() => navigate("/signin")}
-            >
-              Sign In
-            </button>
-
-            <button
-              className="landing-btn secondary"
+              className="btn-primary"
               onClick={() => navigate("/signup")}
             >
-              Sign Up
+              Start Predicting
+            </button>
+            <button
+              className="btn-outline"
+              onClick={() => navigate("/signin")}
+            >
+              View Live Demo
             </button>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
